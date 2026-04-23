@@ -130,7 +130,7 @@ const error = ref('')
 const suggestions = ref([])
 const showSuggestions = ref(false)
 const activeSuggestion = ref(-1)
-let suggestionsTimer
+let suggestionsRequestId = 0
 
 const getApiKey = () => {
   try {
@@ -145,6 +145,7 @@ const weatherApiKey = getApiKey()
 
 const fetchSuggestions = async () => {
   const query = city.value.trim()
+  const requestId = ++suggestionsRequestId
 
   if (!query || query.length < 2 || !weatherApiKey) {
     suggestions.value = []
@@ -164,20 +165,19 @@ const fetchSuggestions = async () => {
     }
 
     const data = await response.json()
+    if (requestId !== suggestionsRequestId) return
     suggestions.value = Array.isArray(data) ? data : []
     activeSuggestion.value = suggestions.value.length ? 0 : -1
     showSuggestions.value = suggestions.value.length > 0
   } catch {
+    if (requestId !== suggestionsRequestId) return
     suggestions.value = []
     showSuggestions.value = false
   }
 }
 
 const onCityInput = () => {
-  clearTimeout(suggestionsTimer)
-  suggestionsTimer = setTimeout(() => {
-    fetchSuggestions()
-  }, 280)
+  fetchSuggestions()
 }
 
 const formatSuggestion = (item) => {

@@ -96,6 +96,7 @@
   .search-bar {
     display: flex;
     width: 100%;
+    align-items: stretch;
 
     .search-input-wrap {
       position: relative;
@@ -138,6 +139,7 @@
     }
 
     button {
+      flex-shrink: 0;
       padding: 0.7rem 0.95rem;
       border: 1px solid #f5cf35;
       border-radius: 0 0.8rem 0.8rem 0;
